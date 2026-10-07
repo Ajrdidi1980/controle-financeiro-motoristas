@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Teste Card Token Mercado Pago</title>
+  </head>
+
+  <body>
+    <h2>Teste Card Token Mercado Pago</h2>
+
+    <form id="form-checkout">
+      <div id="form-checkout__cardNumber"></div>
+
+      <div id="form-checkout__expirationDate"></div>
+
+      <div id="form-checkout__securityCode"></div>
+
+      <input
+        type="text"
+        id="form-checkout__cardholderName"
+        placeholder="Nome do titular"
+      />
+
+      <select id="form-checkout__issuer"></select>
+
+      <select id="form-checkout__installments"></select>
+
+      <select id="form-checkout__identificationType"></select>
+
+      <input
+        type="text"
+        id="form-checkout__identificationNumber"
+        placeholder="CPF"
+      />
+
+      <input
+        type="email"
+        id="form-checkout__cardholderEmail"
+        placeholder="E-mail"
+      />
+
+      <button type="submit">Gerar Card Token</button>
+    </form>
+
+    <pre id="resultado"></pre>
+
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+    <script>
+      const mp = new MercadoPago(
+        "APP_USR-1da4bbf3-eab1-4200-832d-3d791411a1ba",
+      );
+
+      const cardForm = mp.cardForm({
+        amount: "9.90",
+
+        iframe: true,
+
+        form: {
+          id: "form-checkout",
+
+          cardNumber: {
+            id: "form-checkout__cardNumber",
+            placeholder: "Número do cartão",
+          },
+
+          expirationDate: {
+            id: "form-checkout__expirationDate",
+            placeholder: "MM/AA",
+          },
+
+          securityCode: {
+            id: "form-checkout__securityCode",
+            placeholder: "Código de segurança",
+          },
+
+          cardholderName: {
+            id: "form-checkout__cardholderName",
+            placeholder: "Titular do cartão",
+          },
+
+          issuer: {
+            id: "form-checkout__issuer",
+            placeholder: "Banco emissor",
+          },
+
+          installments: {
+            id: "form-checkout__installments",
+            placeholder: "Parcelas",
+          },
+
+          identificationType: {
+            id: "form-checkout__identificationType",
+            placeholder: "Tipo de documento",
+          },
+
+          identificationNumber: {
+            id: "form-checkout__identificationNumber",
+            placeholder: "Número do documento",
+          },
+
+          cardholderEmail: {
+            id: "form-checkout__cardholderEmail",
+            placeholder: "E-mail",
+          },
+        },
+
+        callbacks: {
+          onFormMounted: (error) => {
+            if (error) {
+              console.error("Erro ao montar formulário:", error);
+              return;
+            }
+
+            console.log("✅ Formulário Mercado Pago carregado.");
+          },
+
+          onSubmit: (event) => {
+            event.preventDefault();
+
+            const dados = cardForm.getCardFormData();
+
+            console.log("Card Token:", dados.token);
+
+            document.getElementById("resultado").textContent =
+              "Card Token gerado com sucesso.";
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -37,6 +37,15 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const usuarioAtual = () => auth.currentUser;
+window.obterTokenFirebase = async function () {
+  const usuario = auth.currentUser;
+
+  if (!usuario) {
+    return null;
+  }
+
+  return await usuario.getIdToken();
+};
 
 const provider = new GoogleAuthProvider();
 
@@ -599,5 +608,17 @@ window.totalUsuariosFirebase = async function () {
     console.error("❌ Erro:", erro);
   }
 };
+// =====================================================
+// TOKEN FIREBASE PARA O CLOUDFLARE WORKER
+// =====================================================
 
+window.obterTokenFirebase = async function () {
+  const usuario = usuarioAtual();
+
+  if (!usuario) {
+    throw new Error("Usuário não está logado.");
+  }
+
+  return await usuario.getIdToken();
+};
 console.log("🔥 Firestore conectado");
