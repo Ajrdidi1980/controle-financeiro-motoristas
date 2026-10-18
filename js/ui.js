@@ -49,10 +49,15 @@ window.atualizarStatusTeste = async function () {
     return;
   }
 
-  const resultado = await window.verificarTesteGratis();
+  // Usuário Premium vê a confirmação do plano ativo
+  const acessoPremium = await window.verificarAcessoUsuario();
 
-  if (!resultado) {
-    elemento.style.display = "none";
+  if (acessoPremium) {
+    elemento.textContent =
+      "💎 Plano Premium ativo — você tem acesso aos recursos Premium!";
+    elemento.style.display = "block";
+    elemento.style.color = "#16a34a";
+    elemento.style.fontWeight = "bold";
     return;
   }
 
@@ -69,7 +74,38 @@ window.atualizarStatusTeste = async function () {
     elemento.textContent = "⏰ Seu período de teste grátis terminou.";
   }
 };
-document.getElementById("btn-assinar")?.addEventListener("click", () => {
-  window.open("https://mpago.la/2pqQDbv", "_blank");
+document.getElementById("btn-assinar")?.addEventListener("click", async () => {
+  try {
+    const token = await window.obterTokenFirebase();
+
+    if (!token) {
+      alert("Usuário não autenticado.");
+      return;
+    }
+
+    const resposta = await fetch(
+      "https://controle-motoristas-webhook.antoniojrlinhares.workers.dev/criar-assinatura",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const dados = await resposta.json();
+
+    if (!resposta.ok || !dados.sucesso) {
+      console.error("Erro ao criar assinatura:", dados);
+      alert("Não foi possível iniciar a assinatura.");
+      return;
+    }
+
+    window.open(dados.init_point, "_blank");
+  } catch (erro) {
+    console.error("Erro:", erro);
+    alert("Ocorreu um erro ao iniciar a assinatura.");
+  }
 });
 window.trocarTela = trocarTela;
