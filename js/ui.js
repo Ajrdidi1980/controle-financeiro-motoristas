@@ -1,10 +1,23 @@
 // ===== TROCAR TELA =====
-function trocarTela(id, el) {
+async function trocarTela(id, el) {
   // esconder telas
   document.querySelectorAll(".tela").forEach((t) => (t.style.display = "none"));
 
-  // mostrar tela selecionada
-  document.getElementById(id).style.display = "block";
+  // Mostrar a tela selecionada
+  const telaSelecionada = document.getElementById(id);
+
+  if (!telaSelecionada) {
+    return;
+  }
+
+  telaSelecionada.style.display = "block";
+
+  // Atualizar o status ao abrir a tela de assinatura
+  if (id === "assinatura") {
+    if (typeof window.atualizarStatusTeste === "function") {
+      await window.atualizarStatusTeste();
+    }
+  }
   // Atualiza navegação inferior
   document
     .querySelectorAll(".bottom-nav .nav-item")
@@ -53,15 +66,22 @@ window.atualizarStatusTeste = async function () {
   const acessoPremium = await window.verificarAcessoUsuario();
 
   if (acessoPremium) {
-    elemento.textContent =
-      "💎 Plano Premium ativo — você tem acesso aos recursos Premium!";
-    elemento.style.display = "block";
-    elemento.style.color = "#16a34a";
-    elemento.style.fontWeight = "bold";
+    const cartao = document.getElementById("cartao-assinatura");
+
+    if (cartao) {
+      cartao.innerHTML = `
+      <h3 style="color: #16a34a;">💎 Plano Premium ativo</h3>
+      <p>Seu acesso ao Controle Motoristas está liberado!</p>
+      <p>Continue acompanhando seus ganhos, gastos, metas e resultados.</p>
+    `;
+    }
+
+    elemento.style.display = "none";
     return;
   }
 
   elemento.style.display = "block";
+  const resultado = await window.verificarTesteGratis();
 
   if (resultado.testeAtivo) {
     const textoDias =
