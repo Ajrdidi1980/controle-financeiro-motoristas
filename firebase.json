@@ -1,12 +1,14 @@
 {
   "hosting": {
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**",
-      "android/**"
-    ],
+    "public": "www",
+   "ignore": [
+  "firebase.json",
+  "**/.*",
+  "**/node_modules/**",
+  "android/**",
+  "docs/**",
+  "functions/**"
+],
     "rewrites": [
       {
         "source": "**",
